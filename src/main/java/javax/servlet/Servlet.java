@@ -221,7 +221,7 @@ public interface Servlet {
      *			the client's request 包含客户端请求的ServletRequest对象
      *
      * @param res 	the <code>ServletResponse</code> object that contains
-     *			the servlet's response 包含客户端响应的ServletResponse对象
+     *			the servlet's response 包含servlet响应的ServletResponse对象
      *
      * @exception ServletException 	if an exception occurs that interferes
      *					with the servlet's normal operation 
