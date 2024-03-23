@@ -96,7 +96,23 @@ import java.io.IOException;
  * @see 	javax.servlet.http.HttpServlet
  *
  */
-
+ 
+/**
+ * 定义所有 Servlet 必须实现的方法.
+ *
+ * Servlet 是在 Web Server 中运行的小型 Java 程序. Servlet 通常通过 HTTP（超文本传输协议）
+ * 接收和响应 Web 客户端请求.
+ *
+ * 要实现 Servlet 接口，可以继承 javax.servlet.GenericServlet 或 javax.servlet.http.HttpServlet.
+ *
+ * 该接口定义了初始化 servlet、处理请求、从 server 移除 servlet 的方法. 这些方法被称为 Servlet
+ * 生命周期方法，按以下顺序调用：
+ * 1. servlet 实例化后，使用 init() 方法进行初始化.
+ * 2. client 对 service()方法的调用会被处理.
+ * 3. service() 方法结束后，使用 destroy() 方法销毁 servlet，最后进行 GC 和收尾工作.
+ * 
+ * 除生命周期方法外，该接口还提供了 getServletInfo() 方法，允许 servlet 返回有关自身的基本信息，如作者、版本和版权.
+ */
 
 public interface Servlet {
 
@@ -130,6 +146,16 @@ public interface Servlet {
      *
      */
 
+	/**
+	 * 由 servlet 容器调用，指出即将使用的servlet.
+	 * servlet 容器在实例化 servlet 后只会调用一次 init()方法.
+	 * init() 方法必须成功完成，然后 servlet 才能接收请求.
+	 * servlet 容器将不能使用 servlet 如果init()方法：
+	 *　· 抛出 ServletException 异常
+	 *  · 在 web server 指定的时间内没有 return
+	 *
+	 * 参数 config ，ServletConfig 对象，包含servlet配置信息和初始参数
+	 */
     public void init(ServletConfig config) throws ServletException;
     
     
@@ -151,6 +177,13 @@ public interface Servlet {
      *
      * @see 		#init
      *
+     * 返回一个 ServletConfig 对象，包含该servlet的初始化参数和启动参数.
+     * 返回的 ServletConfig 对象是传递给 init() 方法的那一个.
+     * 该接口(Servlet接口)的实现需要存储             ServletConfig 对象，以便 
+     * getServletConfig() 方法可以返回该 ServletConfig 对象.
+     * 实现了Servlet接口的GenericServlet类，已经做到了这点.
+     * 返回值 初始化该 servlet 的 ServletConfig 对象
+     *
      */
 
     public ServletConfig getServletConfig();
@@ -160,12 +193,15 @@ public interface Servlet {
     /**
      * Called by the servlet container to allow the servlet to respond to 
      * a request.
+     * 由 servlet 容器调用，允许 servlet 响应请求
      *
      * <p>This method is only called after the servlet's <code>init()</code>
      * method has completed successfully.
+     * 只有在servlet的init()方法成功完成后，才会调用service()方法
      * 
      * <p>  The status code of the response always should be set for a servlet 
      * that throws or sends an error.
+     * 对于抛出异常或发送错误的 servlet，应始终设置响应的状态码
      *
      * 
      * <p>Servlets typically run inside multithreaded servlet containers
@@ -173,21 +209,26 @@ public interface Servlet {
      * be aware to synchronize access to any shared resources such as files,
      * network connections, and as well as the servlet's class and instance 
      * variables. 
+     * Servlet 通常运行在多线程 Servlet 容器中，该容器可以并发处理多个请求。
+     * 开发人员在访问任何共享资源时，必须注意进行同步操作，包括文件、网络连接
+     * 以及 servlet 的类和实例变量。
      * More information on multithreaded programming in Java is available in 
      * <a href="http://java.sun.com/Series/Tutorial/java/threads/multithreaded.html">
      * the Java tutorial on multi-threaded programming</a>.
      *
      *
      * @param req 	the <code>ServletRequest</code> object that contains
-     *			the client's request
+     *			the client's request 包含客户端请求的ServletRequest对象
      *
      * @param res 	the <code>ServletResponse</code> object that contains
-     *			the servlet's response
+     *			the servlet's response 包含客户端响应的ServletResponse对象
      *
      * @exception ServletException 	if an exception occurs that interferes
      *					with the servlet's normal operation 
+     * 如果出现影响servlet正常操作的异常
      *
      * @exception IOException 		if an input or output exception occurs
+     * 如果出现输入或输出异常
      *
      */
 
@@ -199,12 +240,15 @@ public interface Servlet {
     /**
      * Returns information about the servlet, such
      * as author, version, and copyright.
+     * 返回servlet相关信息，如作者、版本和版权。
      * 
      * <p>The string that this method returns should
      * be plain text and not markup of any kind (such as HTML, XML,
      * etc.).
+     * 此方法返回的字符串应该是纯文本，而不是任何类型的标记文本(如HTML、XML等)。
      *
      * @return 		a <code>String</code> containing servlet information
+     * 包含servlet信息的字符串
      *
      */
 
@@ -222,10 +266,16 @@ public interface Servlet {
      * method, it will not call the <code>service</code> method again
      * on this servlet.
      *
+     * 由servlet容器调用，以指示servlet正在退出服务。此方法仅在servlet
+     * service()方法中的所有线程都退出或超时之后才调用。servlet容器调用
+     * 此方法之后，将不再调用该servlet的service()方法。
+
      * <p>This method gives the servlet an opportunity 
      * to clean up any resources that are being held (for example, memory,
      * file handles, threads) and make sure that any persistent state is
      * synchronized with the servlet's current state in memory.
+     * 这种方法为Servlet提供了清理任何正在被持有的资源的机会（例如，内存、
+     * 文件句柄、线程），并确保任何持久状态与Servlet在内存中的当前状态同步。
      *
      */
 
