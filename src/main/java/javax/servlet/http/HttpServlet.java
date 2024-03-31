@@ -77,6 +77,8 @@ import javax.servlet.*;
  * an HTTP servlet suitable for a Web site. A subclass of
  * <code>HttpServlet</code> must override at least 
  * one method, usually one of these:
+ * 提供要子类化的抽象类，以创建适合Web站点的HTTP servlet。
+ * HttpServlet的子类必须至少覆盖（override）以下方法中的一个：
  *
  * <ul>
  * <li> <code>doGet</code>, if the servlet supports HTTP GET requests
@@ -88,15 +90,25 @@ import javax.servlet.*;
  * <li> <code>getServletInfo</code>, which the servlet uses to
  * provide information about itself 
  * </ul>
+ * doGet()方法，如果servlet支持HTTP GET请求
+ * doPost()方法，如果servlet支持HTTP POST请求
+ * doPut()方法，如果servlet支持HTTP PUT请求
+ * doDelete()方法，如果servlet支持HTTP DELETE请求
+ * init()方法、destroy()方法，管理servlet在生命周期内持有的资源
+ * getServletInfo()方法，提供servlet自身信息
  *
  * <p>There's almost no reason to override the <code>service</code>
  * method. <code>service</code> handles standard HTTP
  * requests by dispatching them to the handler methods
  * for each HTTP request type (the <code>do</code><i>XXX</i>
  * methods listed above).
+ * 理应重写service()方法。service()方法是这样处理标准HTTP请求的：
+ * 根据每个HTTP请求的类型，把他们分发给与之对应的handler方法。
+ *（以上列出的doXXX()方法）
  *
  * <p>Likewise, there's almost no reason to override the 
  * <code>doOptions</code> and <code>doTrace</code> methods.
+ * 同样地，理应重写doOptions()方法和doTrace()方法。
  * 
  * <p>Servlets typically run on multithreaded servers,
  * so be aware that a servlet must handle concurrent
@@ -105,6 +117,9 @@ import javax.servlet.*;
  * instance or class variables and external objects
  * such as files, database connections, and network 
  * connections.
+ * Servlet通常运行在多线程服务器上，因此请注意，servlet必须处理并发请求，
+ * 并注意对共享资源的访问进行同步操作。共享资源包括内存数据（如实例或类变量）
+ * 和外部对象（如文档、数据库连接和网络连接）。
  * See the
  * <a href="http://java.sun.com/Series/Tutorial/java/threads/multithreaded.html">
  * Java Tutorial on Multithreaded Programming</a> for more
@@ -134,7 +149,7 @@ public abstract class HttpServlet extends GenericServlet
     
     /**
      * Does nothing, because this is an abstract class.
-     * 
+     * 什幺都不做，因为这是一个抽象类。
      */
 
     public HttpServlet() { }
@@ -144,11 +159,14 @@ public abstract class HttpServlet extends GenericServlet
      *
      * Called by the server (via the <code>service</code> method) to
      * allow a servlet to handle a GET request. 
+     * 由服务器调用（通过service()方法）以允许 Servlet 处理 GET 请求。
      *
      * <p>Overriding this method to support a GET request also
      * automatically supports an HTTP HEAD request. A HEAD
      * request is a GET request that returns no body in the
      * response, only the request header fields.
+     * 重写此方法以支持GET方法，HEAD方法也会自动支持。
+     * HEAD 请求是 GET 请求，在响应中不返回正文，只返回请求标头字段。
      *
      * <p>When overriding this method, read the request data,
      * write the response headers, get the response's writer or 
@@ -157,10 +175,15 @@ public abstract class HttpServlet extends GenericServlet
      * a <code>PrintWriter</code> object to return the response,
      * set the content type before accessing the
      * <code>PrintWriter</code> object.
+     * 重写此方法时，读取请求数据，写入响应标头，获取响应的写入器
+     * 或输出流对象，最后写入响应数据。最好包括内容类型和编码。
+     * 使用 PrintWriter 对象返回响应时，请在访问 PrintWriter 对象
+     * 之前设置内容类型
      *
      * <p>The servlet container must write the headers before
      * committing the response, because in HTTP the headers must be sent
      * before the response body.
+     * Servlet 容器必须在提交响应之前写入标头，因为在 HTTP 中，标头必须在响应正文之前发送。
      *
      * <p>Where possible, set the Content-Length header (with the
      * {@link javax.servlet.ServletResponse#setContentLength} method),
@@ -168,15 +191,23 @@ public abstract class HttpServlet extends GenericServlet
      * to return its response to the client, improving performance.
      * The content length is automatically set if the entire response fits
      * inside the response buffer.
+     * 在可能的情况下，使用 setContentLength 方法设置 Content-Length 标头，
+     * 以允许 servlet 容器使用持久连接将其响应返回给客户端，从而提高性能。
+     * 如果整个响应适合响应缓冲区，则会自动设置内容长度。
      *
      * <p>When using HTTP 1.1 chunked encoding (which means that the response
      * has a Transfer-Encoding header), do not set the Content-Length header.
+     * 使用 HTTP 1.1 分块编码（这意味着响应具有 Transfer-Encoding 标头）时，
+     * 请勿设置 Content-Length 标头。
      *
      * <p>The GET method should be safe, that is, without
      * any side effects for which users are held responsible.
      * For example, most form queries have no side effects.
      * If a client request is intended to change stored data,
      * the request should use some other HTTP method.
+     * GET方法应该是安全的，也就是说，没有任何由用户负责的副作用。
+     * 例如，大多数表单查询没有副作用。如果客户端请求打算更改存储的数据，
+     * 则该请求应该使用其他HTTP方法。
      *
      * <p>The GET method should also be idempotent, meaning
      * that it can be safely repeated. Sometimes making a
@@ -184,25 +215,32 @@ public abstract class HttpServlet extends GenericServlet
      * repeating queries is both safe and idempotent, but
      * buying a product online or modifying data is neither
      * safe nor idempotent. 
+     * GET方法也应该是幂等的，这意味着它可以安全地重复。
+     * 有时使一个方法安全也会使它幂等。例如，重复查询既安全又幂等，
+     * 但在线购买产品或修改数据既不安全也不幂等。
      *
      * <p>If the request is incorrectly formatted, <code>doGet</code>
      * returns an HTTP "Bad Request" message.
+     * 如果请求格式不正确，doGet()返回HTTP消息"Bad Request"。
      * 
      * @param req   an {@link HttpServletRequest} object that
      *                  contains the request the client has made
      *                  of the servlet
+     * 一个HttpServletRequest对象，它包含客户端对servlet发出的请求
      *
      * @param resp  an {@link HttpServletResponse} object that
      *                  contains the response the servlet sends
      *                  to the client
+     * 一个HttpServletResponse对象，它包含servlet发送给客户端的响应
      * 
      * @exception IOException   if an input or output error is 
      *                              detected when the servlet handles
      *                              the GET request
+     * 如果在servlet处理GET请求时检测到输入或输出错误
      *
      * @exception ServletException  if the request for the GET
      *                                  could not be handled
-     *
+     * 如果无法处理GET请求
      * @see javax.servlet.ServletResponse#setContentType
      */
 
@@ -226,20 +264,28 @@ public abstract class HttpServlet extends GenericServlet
      * in milliseconds since midnight January 1, 1970 GMT.
      * If the time is unknown, this method returns a negative
      * number (the default).
+     * 返回HttpServletRequest对象最后一次修改的时间，以毫秒为单位，
+     * 从1970 GMT时间1月1日午夜开始。
+     * 如果时间未知，此方法将返回一个负数(默认值)。
      *
      * <p>Servlets that support HTTP GET requests and can quickly determine
      * their last modification time should override this method.
      * This makes browser and proxy caches work more effectively,
      * reducing the load on server and network resources.
+     * 支持HTTP GET请求并能快速确定其最后修改时间的servlet应该覆盖此方法。
+     * 这使得浏览器和代理缓存更有效地工作，减少了服务器和网络资源的负载。
      *
      * @param req   the <code>HttpServletRequest</code> 
      *                  object that is sent to the servlet
+     *					发送给servlet的HttpServletRequest对象
      *
      * @return  a   <code>long</code> integer specifying
      *                  the time the <code>HttpServletRequest</code>
      *                  object was last modified, in milliseconds
      *                  since midnight, January 1, 1970 GMT, or
      *                  -1 if the time is not known
+     * 一个长整数，指定HttpServletRequest对象最后一次修改的时间，
+     * 单位为毫秒，从1970年1月1日午夜开始，如果时间未知，则为-1
      */
 
     protected long getLastModified(HttpServletRequest req) {
@@ -258,6 +304,10 @@ public abstract class HttpServlet extends GenericServlet
      * Content-Type or Content-Length. The HTTP HEAD
      * method counts the output bytes in the response
      * to set the Content-Length header accurately.
+     * 从service()方法接收HTTP HEAD请求并处理该请求.
+	 * 当客户端只希望看到响应的报头(例如Content-Type或Content-Length)时，
+	 * 它发送HEAD请求。HTTP HEAD方法对响应中的输出字节进行计数，
+	 * 以便准确地设置Content-Length报头。
      *
      * <p>If you override this method, you can avoid computing
      * the response body and just set the response headers
@@ -265,20 +315,26 @@ public abstract class HttpServlet extends GenericServlet
      * <code>doHead</code> method you write is both safe
      * and idempotent (that is, protects itself from being
      * called multiple times for one HTTP HEAD request).
+     * 如果您重写此方法，则可以避免计算响应体，而只需直接设置响应头以提高性能。
+     * 确保您编写的doHead方法既安全又幂等(也就是说，保护自己不因一个HTTP HEAD请求而被多次调用)。
      *
      * <p>If the HTTP HEAD request is incorrectly formatted,
      * <code>doHead</code> returns an HTTP "Bad Request"
      * message.
+     * 如果HTTP HEAD请求格式不正确，doHead将返回HTTP消息"Bad Request"
      *
      * @param req   the request object that is passed to the servlet
      *                        
      * @param resp  the response object that the servlet
      *                  uses to return the headers to the clien
+     * 					传递给servlet的请求对象
      *
      * @exception IOException   if an input or output error occurs
+     * 							如果出现输入或输出错误
      *
      * @exception ServletException  if the request for the HEAD
      *                                  could not be handled
+     *									如果无法处理HEAD请求
      */
     protected void doHead(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
