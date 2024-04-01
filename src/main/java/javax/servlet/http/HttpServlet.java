@@ -324,10 +324,11 @@ public abstract class HttpServlet extends GenericServlet
      * 如果HTTP HEAD请求格式不正确，doHead将返回HTTP消息"Bad Request"
      *
      * @param req   the request object that is passed to the servlet
+     *				传递给servlet的请求对象
      *                        
      * @param resp  the response object that the servlet
      *                  uses to return the headers to the clien
-     * 					传递给servlet的请求对象
+     * 					Servlet 用于将标头返回给客户机的响应对象
      *
      * @exception IOException   if an input or output error occurs
      * 							如果出现输入或输出错误
@@ -350,11 +351,14 @@ public abstract class HttpServlet extends GenericServlet
      *
      * Called by the server (via the <code>service</code> method)
      * to allow a servlet to handle a POST request.
+     * 由服务器调用（通过service()方法）以允许 Servlet 处理 POST 请求。
      *
      * The HTTP POST method allows the client to send
      * data of unlimited length to the Web server a single time
      * and is useful when posting information such as
      * credit card numbers.
+     * HTTP POST 方法允许客户端单次向 Web 服务器发送无限长度的数据，
+     * 并且在发送信用卡号等信息时非常有用。
      *
      * <p>When overriding this method, read the request data,
      * write the response headers, get the response's writer or output
@@ -362,10 +366,14 @@ public abstract class HttpServlet extends GenericServlet
      * to include content type and encoding. When using a
      * <code>PrintWriter</code> object to return the response, set the 
      * content type before accessing the <code>PrintWriter</code> object. 
+     * 重写此方法时，读取请求数据，写入响应标头，获取响应的writer对象或
+     * 输出流对象，最后写入响应数据。最好包括内容类型和编码。使用PrintWriter
+     * 对象返回响应时，请在访问PrintWriter对象前设置内容类型。
      *
      * <p>The servlet container must write the headers before committing the
      * response, because in HTTP the headers must be sent before the 
      * response body.
+     * Servlet 容器必须在提交响应之前写入标头，因为在 HTTP 中，标头必须在响应正文之前发送。
      *
      * <p>Where possible, set the Content-Length header (with the
      * {@link javax.servlet.ServletResponse#setContentLength} method),
@@ -373,33 +381,44 @@ public abstract class HttpServlet extends GenericServlet
      * to return its response to the client, improving performance.
      * The content length is automatically set if the entire response fits
      * inside the response buffer.  
+     * 在可能的情况下，使用 setContentLength 方法设置 Content-Length 标头，
+     * 以允许 servlet 容器使用持久连接将其响应返回给客户端，从而提高性能。
+     * 如果整个响应适合响应缓冲区，则会自动设置内容长度。
      *
      * <p>When using HTTP 1.1 chunked encoding (which means that the response
      * has a Transfer-Encoding header), do not set the Content-Length header. 
-     *
+     * 使用 HTTP 1.1 分块编码（这意味着响应具有 Transfer-Encoding 标头）时，
+     * 请勿设置 Content-Length 标头。
+     * 
      * <p>This method does not need to be either safe or idempotent.
      * Operations requested through POST can have side effects for
      * which the user can be held accountable, for example, 
      * updating stored data or buying items online.
+     * 此方法无需满足安全性或幂等性。通过 POST 请求的操作可能会产生副作用，
+     * 用户可以对此负责，例如，更新存储的数据或在线购买物品。
      *
      * <p>If the HTTP POST request is incorrectly formatted,
      * <code>doPost</code> returns an HTTP "Bad Request" message.
-     *
+     * 如果HTTP POST 请求格式不正确，doPost 将返回HTTP消息"Bad Request"
      *
      * @param req   an {@link HttpServletRequest} object that
      *                  contains the request the client has made
      *                  of the servlet
+     *				一个 HttpServletRequest 对象，该对象包含客户端对 Servlet 发出的请求
      *
      * @param resp  an {@link HttpServletResponse} object that
      *                  contains the response the servlet sends
      *                  to the client
+     *				一个 HttpServletResponse 对象，该对象包含 Servlet 发送到客户端的响应
      * 
      * @exception IOException   if an input or output error is 
      *                              detected when the servlet handles
      *                              the request
+     * 如果在servlet处理POST请求时检测到输入或输出错误
      *
      * @exception ServletException  if the request for the POST
      *                                  could not be handled
+     * 如果无法处理POST请求
      *
      * @see javax.servlet.ServletOutputStream
      * @see javax.servlet.ServletResponse#setContentType
@@ -420,10 +439,12 @@ public abstract class HttpServlet extends GenericServlet
     /**
      * Called by the server (via the <code>service</code> method)
      * to allow a servlet to handle a PUT request.
+     * 由服务器调用（通过service()方法）以允许 Servlet 处理 PUT 请求。
      *
      * The PUT operation allows a client to 
      * place a file on the server and is similar to 
      * sending a file by FTP.
+     * PUT操作允许客户端向服务器发送文件，类似通过FTP发送文件
      *
      * <p>When overriding this method, leave intact
      * any content headers sent with the request (including
@@ -434,30 +455,41 @@ public abstract class HttpServlet extends GenericServlet
      * (HTTP 501 - Not Implemented) and discard the request.
      * For more information on HTTP 1.1, see RFC 2616
      * <a href="http://www.ietf.org/rfc/rfc2616.txt"></a>.
+     * 重写此方法时，请保留随请求一起发送的任何内容标头不变。
+     * 如果方法不能处理内容标头，必须发送错误信息(HTTP 501 - 未实现)，并且
+     * 丢弃该请求
      *
      * <p>This method does not need to be either safe or idempotent.
      * Operations that <code>doPut</code> performs can have side
      * effects for which the user can be held accountable. When using
      * this method, it may be useful to save a copy of the
      * affected URL in temporary storage.
+     * 此方法无需满足安全性或幂等性。doPut 执行的操作可能会产生副作用，
+     * 用户可以对此负责。使用此方法时，将受影响的 URL 的副本保存在临时存储中
+     * 可能很有用。
      *
      * <p>If the HTTP PUT request is incorrectly formatted,
      * <code>doPut</code> returns an HTTP "Bad Request" message.
+     * 如果HTTP PUT 请求格式不正确，doPut 将返回HTTP消息"Bad Request"
      *
      * @param req   the {@link HttpServletRequest} object that
      *                  contains the request the client made of
      *                  the servlet
+     * 一个 HttpServletRequest 对象，该对象包含客户端对 Servlet 发出的请求
      *
      * @param resp  the {@link HttpServletResponse} object that
      *                  contains the response the servlet returns
      *                  to the client
+     * 一个 HttpServletResponse 对象，该对象包含 Servlet 发送到客户端的响应
      *
      * @exception IOException   if an input or output error occurs
      *                              while the servlet is handling the
      *                              PUT request
+     * 如果在servlet处理PUT请求时检测到输入或输出错误
      *
      * @exception ServletException  if the request for the PUT
      *                                  cannot be handled
+     * 如果无法处理PUT请求
      */
     protected void doPut(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
@@ -475,9 +507,11 @@ public abstract class HttpServlet extends GenericServlet
     /**
      * Called by the server (via the <code>service</code> method)
      * to allow a servlet to handle a DELETE request.
+     * 由服务器调用（通过service()方法）以允许 Servlet 处理 DELETE 请求。
      *
      * The DELETE operation allows a client to remove a document
      * or Web page from the server.
+     * DELETE 操作允许客户端删除服务器上的文档或Web页面
      * 
      * <p>This method does not need to be either safe
      * or idempotent. Operations requested through
@@ -485,25 +519,33 @@ public abstract class HttpServlet extends GenericServlet
      * can be held accountable. When using
      * this method, it may be useful to save a copy of the
      * affected URL in temporary storage.
+     * 此方法无需满足安全性或幂等性。DELETE 请求的操作可能会产生副作用，
+     * 用户可以对此负责。使用此方法时，将受影响的 URL 的副本保存在临时存储中
+     * 可能很有用。
      *
      * <p>If the HTTP DELETE request is incorrectly formatted,
      * <code>doDelete</code> returns an HTTP "Bad Request"
      * message.
+     * 如果HTTP DELETE 请求格式不正确，doDelete 将返回HTTP消息"Bad Request"
      *
      * @param req   the {@link HttpServletRequest} object that
      *                  contains the request the client made of
      *                  the servlet
+     * HttpServletRequest 对象，该对象包含客户端对 Servlet 发出的请求
      *
      * @param resp  the {@link HttpServletResponse} object that
      *                  contains the response the servlet returns
-     *                  to the client                                
+     *                  to the client 
+     * HttpServletResponse 对象，该对象包含 Servlet 发送到客户端的响应
      *
      * @exception IOException   if an input or output error occurs
      *                              while the servlet is handling the
      *                              DELETE request
+     * 如果在servlet处理DELETE请求时检测到输入或输出错误
      *
      * @exception ServletException  if the request for the
      *                                  DELETE cannot be handled
+     * 如果无法处理DELETE请求
      */
     protected void doDelete(HttpServletRequest req,
                             HttpServletResponse resp)
@@ -548,6 +590,7 @@ public abstract class HttpServlet extends GenericServlet
     /**
      * Called by the server (via the <code>service</code> method)
      * to allow a servlet to handle a OPTIONS request.
+     * 由服务器调用（通过service()方法）以允许 Servlet 处理 OPTIONS 请求。
      *
      * The OPTIONS request determines which HTTP methods 
      * the server supports and
@@ -557,24 +600,33 @@ public abstract class HttpServlet extends GenericServlet
      *
      * <p><code>Allow: GET, HEAD, TRACE, OPTIONS</code>
      *
+     * OPTIONS 请求确定服务端支持哪些HTTP方法，并返回对应的标头。例如，
+     * 如果servlet重写了doGet()方法，那么该方法会返回以下标头：
+     * Allow: GET, HEAD, TRACE, OPTIONS
+     *
      * <p>There's no need to override this method unless the
      * servlet implements new HTTP methods, beyond those 
      * implemented by HTTP 1.1.
+     * 除非servlet实现了HTTP1.1之外的新的HTTP方法，否则无需重写这个方法。
      *
      * @param req   the {@link HttpServletRequest} object that
      *                  contains the request the client made of
-     *                  the servlet
+     *                  the servlet 
+     * HttpServletRequest 对象，该对象包含客户端对 Servlet 发出的请求
      *
      * @param resp  the {@link HttpServletResponse} object that
      *                  contains the response the servlet returns
-     *                  to the client                                
+     *                  to the client  
+     * HttpServletResponse 对象，该对象包含 Servlet 发送到客户端的响应
      *
      * @exception IOException   if an input or output error occurs
      *                              while the servlet is handling the
      *                              OPTIONS request
-     *
+     * 如果在servlet处理 OPTIONS 请求时检测到输入或输出错误
+     * 
      * @exception ServletException  if the request for the
      *                                  OPTIONS cannot be handled
+     * 如果无法处理 OPTIONS 请求
      */
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp)
         throws ServletException, IOException
@@ -655,26 +707,32 @@ public abstract class HttpServlet extends GenericServlet
     /**
      * Called by the server (via the <code>service</code> method)
      * to allow a servlet to handle a TRACE request.
+     * 由服务器调用（通过service()方法）以允许 Servlet 处理 TRACE 请求。
      *
      * A TRACE returns the headers sent with the TRACE
      * request to the client, so that they can be used in
      * debugging. There's no need to override this method. 
+     * TRACE 将与 TRACE 请求一起发送的标头返回给客户端，以便它们可用于调试。
+     * 无需重写此方法。
      *
      * @param req   the {@link HttpServletRequest} object that
      *                  contains the request the client made of
      *                  the servlet
-     *
+     * HttpServletRequest 对象，该对象包含客户端对 Servlet 发出的请求
      *
      * @param resp  the {@link HttpServletResponse} object that
      *                  contains the response the servlet returns
      *                  to the client                                
-     *
+     * HttpServletResponse 对象，该对象包含 Servlet 发送到客户端的响应
+     * 
      * @exception IOException   if an input or output error occurs
      *                              while the servlet is handling the
      *                              TRACE request
+     * 如果在servlet处理 TRACE 请求时检测到输入或输出错误
      *
      * @exception ServletException  if the request for the
      *                                  TRACE cannot be handled
+     * 如果无法处理 TRACE 请求
      */
     protected void doTrace(HttpServletRequest req, HttpServletResponse resp) 
         throws ServletException, IOException
@@ -712,22 +770,29 @@ public abstract class HttpServlet extends GenericServlet
      * this class. This method is an HTTP-specific version of the 
      * {@link javax.servlet.Servlet#service} method. There's no
      * need to override this method.
+     * 从public service()方法接收标准 HTTP 请求，并将其分发给
+     * 此类中定义的 doXXX() 方法。此方法是 javax.servlet.Servlet#service 方法
+     * 的 HTTP 特定版本, 无需覆盖此方法。
      *
      * @param req   the {@link HttpServletRequest} object that
      *                  contains the request the client made of
      *                  the servlet
+     * HttpServletRequest 对象，该对象包含客户端对 Servlet 发出的请求
      *
      * @param resp  the {@link HttpServletResponse} object that
      *                  contains the response the servlet returns
-     *                  to the client                                
+     *                  to the client     
+     * HttpServletResponse 对象，该对象包含 Servlet 发送到客户端的响应
      *
      * @exception IOException   if an input or output error occurs
      *                              while the servlet is handling the
      *                              HTTP request
+     * 如果在servlet处理 HTTP 请求时检测到输入或输出错误
      *
      * @exception ServletException  if the HTTP request
      *                                  cannot be handled
-     * 
+     * 如果无法处理 HTTP 请求 
+     *
      * @see javax.servlet.Servlet#service
      */
     protected void service(HttpServletRequest req, HttpServletResponse resp)
@@ -796,6 +861,9 @@ public abstract class HttpServlet extends GenericServlet
      * doGet, to ensure that headers are set before response data is
      * written.  A subclass might have set this header already, so we
      * check.
+     * 设置 Last-Modified 实体标头字段（如果尚未设置该字段，并且该值是否有意义）。
+     * 在 doGet 之前调用，以确保在写入响应数据之前设置标头。
+     * 子类可能已经设置了这个标头，所以我们检查一下。
      */
     private void maybeSetLastModified(HttpServletResponse resp,
                                       long lastModified) {
@@ -810,21 +878,26 @@ public abstract class HttpServlet extends GenericServlet
      * Dispatches client requests to the protected
      * <code>service</code> method. There's no need to
      * override this method.
+     * 将客户端请求分发给protected service()方法，无需覆盖该方法
      * 
      * @param req   the {@link HttpServletRequest} object that
      *                  contains the request the client made of
      *                  the servlet
+     * HttpServletRequest 对象，该对象包含客户端对 Servlet 发出的请求
      *
      * @param res   the {@link HttpServletResponse} object that
      *                  contains the response the servlet returns
-     *                  to the client                                
+     *                  to the client                 
+     * HttpServletResponse 对象，该对象包含 Servlet 发送到客户端的响应
      *
      * @exception IOException   if an input or output error occurs
      *                              while the servlet is handling the
      *                              HTTP request
+     * 如果在servlet处理 HTTP 请求时检测到输入或输出错误
      *
      * @exception ServletException  if the HTTP request cannot
      *                                  be handled
+     * 如果无法处理 HTTP 请求 
      * 
      * @see javax.servlet.Servlet#service
      */
@@ -853,6 +926,8 @@ public abstract class HttpServlet extends GenericServlet
  * This just swallows that body, counting the bytes in order to set
  * the content length appropriately.  All other methods delegate directly
  * to the wrapped HTTP Servlet Response object.
+ * 不包含正文的响应，用于（哑）“HEAD”支持。这只会吞噬该正文，计算字节数以适当地设置内容长度。
+ * 所有其他方法都直接委托给包装的 HTTP Servlet Response 对象。
  */
 // file private
 class NoBodyResponse extends HttpServletResponseWrapper {
@@ -956,6 +1031,7 @@ class NoBodyResponse extends HttpServletResponseWrapper {
 
 /*
  * Servlet output stream that gobbles up all its data.
+ * 吞噬其所有数据的 Servlet 输出流。
  */
 // file private
 class NoBodyOutputStream extends ServletOutputStream {
